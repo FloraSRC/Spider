@@ -34,88 +34,34 @@ public class App {
 			
 			Document doc =Jsoup.connect(url).get();
 			
-			Elements es = doc.select("src");
+			Elements es = doc.select(".grid_view .item");
 			System.out.println(es.size());
 			
 			//创建一个存储影片的列表
 			ArrayList<Film> list = new ArrayList<>();
 			
- 			for (Element e :es)   {
+ 			for (Element e :es)   
+ 			{
  				Film f =new Film();
 				//每一部影片
-				Element t = e.select(".title").first();
-				String num = e.select(".star span").last().text();
-				System.out.println(t.text()+","+ num);
-				
-//				f.id
-//				f.title
-				list.add(f);
-			}
-			
-			
-			
-			
-//			try {
-//				
-//				Document doc =Jsoup.connect(url).get();
-//				
-//				Elements es = doc.select("src");
-//				System.out.println(es.size());
-//				
-//				for (Element e :es)   {
-//					//每一部影片
-//					Element t = e.select(".title").first();
-//					String num = e.select(".star span").last().text();
-//					System.out.println(t.text()+","+ num);
-//					
-//				}
-			
-			
-			
-			
-//			try {
-//				
-//				Document doc =Jsoup.connect(url).get();
-//				
-//				Elements es = doc.select(".grid_view .item");
-//				System.out.println(es.size());
-//				
-//				for (Element e :es)   {
-//					//每一部影片
-//					Element t = e.select(".title").first();
-//					String num = e.select(".star span").last().text();
-//					System.out.println(t.text()+","+ num);
-//					
-//				}
-//得到影片星星			
-			
-			
-			
-//			Document doc =Jsoup.connect(url).get();
-//			
-//			Elements es = doc.select(".grid_view .item");
-//			System.out.println(es.size());
-//			
-//			for (Element e :es)   {
-//				Element t = e.select(".title").first();
-//				System.out.println(t.text());
-//				
-//			}
-//得到影片名称			
-			
-			
-			
-//			String title = doc.title();
-//			String data = doc.data();
-			
-			
-//			System.out.println(title);
-//			System.out.println(data);
-			
-		} catch (IOException e) {
+ 				f.id = Integer.parseInt(e.select(".pic em") .first().text());
+ 				f.poster = e.select("img").first().attr("src");
+ 				f.info =  e.select(" .bd p").first().text();
+ 				f.title=e.select(".title").first().text();
+ 				f.rating = Double.parseDouble(e.select(".rating_num").first().text());
+ 				String num=e.select(".star span").last().text();
+ 				f.num = Integer.parseInt(num.substring(0,num.length()-3));
+ 				f.quote = e.select(".inq").first().text();
+ 				
+ 				System.out.println(f);
+ 				list.add(f);
+
+ 			}
+ 			
+		}catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	
 	}
-
 }
