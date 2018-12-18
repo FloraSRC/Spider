@@ -5,7 +5,7 @@ package edu.csftu.src;
  * @author flora
  *
  */
-public class Film {
+public class Film implements Comparable<Film> {
 	
 	/**
 	 * Ó°Æ¬Ãû³Æ
@@ -41,13 +41,30 @@ public class Film {
 	 * ¶ÌÆÀ
 	 */
 	String quote;
+	
+	public String toCSV() {
+		return String.format("%d\t%s\t%d\t%.1f\n", 
+				id,
+				title,
+				num,
+				rating);
+		
+	}
+	
 
 	@Override
 	public String toString() {
 		return "Film [title=" + title + ", info=" + info + ", rating=" + rating + ", num=" + num + ", id=" + id
 				+ ", poster=" + poster + ", quote=" + quote + "]";
 	}
-	
+
+
+//	@Override
+//	public int compareTo(Film o) {
+//		// TODO Auto-generated method stub
+//		return o.id - id;
+//	}
+//	
 
 
 }

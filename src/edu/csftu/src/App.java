@@ -1,12 +1,11 @@
 package edu.csftu.src;
 
-import java.io.IOException;
+import java.io.FileWriter;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
-
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
+import java.util.Collections;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 
 /**
@@ -26,42 +25,90 @@ public class App {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		// 目标 URL
-		String url ="https://movie.douban.com/top250"; 
+		//   线程池
+		//   固定大小
+		ExecutorService pool = Executors.newFixedThreadPool(4);
+		//   无限（缓存）
+		pool = Executors.newCachedThreadPool();
+		//   一个线程
+//		pool = Executors.newSingleThreadExecutor();
+		ArrayList<Film> list = new ArrayList<Film>();
+		String url = "https://movie.douban.com/top250?start";
 		
-		//使用 JSoup 抓取文档
-		try {
+		for(int i=0; i<10; i++) {
+			String path = String.format("%s=%d",url,i*25);
+			pool.submit(new Spider(path, list));		
 			
-			Document doc =Jsoup.connect(url).get();
 			
-			Elements es = doc.select(".grid_view .item");
-			System.out.println(es.size());
-			
-			//创建一个存储影片的列表
-			ArrayList<Film> list = new ArrayList<>();
-			
- 			for (Element e :es)   
- 			{
- 				Film f =new Film();
-				//每一部影片
- 				f.id = Integer.parseInt(e.select(".pic em") .first().text());
- 				f.poster = e.select("img").first().attr("src");
- 				f.info =  e.select(" .bd p").first().text();
- 				f.title=e.select(".title").first().text();
- 				f.rating = Double.parseDouble(e.select(".rating_num").first().text());
- 				String num=e.select(".star span").last().text();
- 				f.num = Integer.parseInt(num.substring(0,num.length()-3));
- 				f.quote = e.select(".inq").first().text();
- 				
- 				System.out.println(f);
- 				list.add(f);
-
- 			}
- 			
-		}catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
-	
+		pool.shutdown();
+//		System.out.println(pool.isTerminated());
+		while (!pool.isTerminated())
+		{
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		//  数据排序
+		System.out.println(list.size());
+		for(Film film : list)
+		{
+			System.out.println(film.toCSV());
+		}
+		// 写入文件
+		String file="d:/film.csv";//绝对路径
+//		String file = "film.csv";//当前位置（可覆盖上一句代码）
+		
+		//排序
+//		Collections.sort(list,null);//null可改成其他的排序规则
+		
+		//io操作
+		try (FileWriter out = new FileWriter(file)){
+			//写数据
+			for (Film film : list) {
+				out.write(film.toCSV());
+			}
+			System.out.println("ok");
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+			}
 	}
-}
+		
+//		pool.submit(task);
+
+
+
+		
+//		Thread thread1 = new Thread(new Runnable()
+//				{
+//
+//					@Override
+//					public void run() {
+//						// TODO Auto-generated method stub
+//						while (true) {
+//							System.out.println("111");
+//						}
+//					}
+//			
+//				});
+//		Thread thread2 = new Thread(new Runnable() {
+//
+//			@Override
+//			public void run() {
+//				// TODO Auto-generated method stub
+//				while (true) {
+//					System.out.println("2222222");
+//				}
+//			}
+//			
+//		});
+//		
+//		thread1.start();
+//		thread2.start();
+//		
+		
+
